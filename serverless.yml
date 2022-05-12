@@ -1,0 +1,64 @@
+org: jasonwmiller
+app: assemblyai-demo-webhook-receiver-lambda
+service: assemblyai-demo-webhook-receiver-lambda-api
+
+frameworkVersion: '3'
+
+custom:
+  tableName: 'webhook-table-${self:provider.stage}'
+  wsgi:
+    app: app.app
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [ WebhookTable, Arn ]
+  environment:
+    WEBHOOK_TABLE: ${self:custom.tableName}
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - httpApi: '*'
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements
+
+resources:
+  Resources:
+    WebhookTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: transcript_id
+            AttributeType: S
+          - AttributeName: file_name
+            AttributeType: S
+          - AttributeName: status
+            AttributeType: S
+          - AttributeName: created_at
+            AttributeType: S
+        KeySchema:
+          - AttributeName: transcript_id
+            KeyType: HASH
+          - AttributeName: file_name
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tableName}
