@@ -1,4 +1,4 @@
-name: assemblyai-demo-webhook-receiver-lambda
+name: assemblyai-demo-webhook-receiver-lambda-api
 org: jasonwmiller
 description: Deploys a Python Flask API service, backed by DynamoDB, with traditional Serverless Framework
 keywords: aws, serverless, faas, lambda, python, flask, dynamodb

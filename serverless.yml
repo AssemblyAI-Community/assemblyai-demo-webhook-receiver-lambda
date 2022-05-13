@@ -1,6 +1,6 @@
 org: jasonwmiller
 app: assemblyai-demo-webhook-receiver-lambda
-service: assemblyai-demo-webhook-receiver-lambda-api
+service: assemblyai-demo-webhook-receiver-lambda
 
 frameworkVersion: '3'
 
@@ -47,16 +47,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: transcript_id
             AttributeType: S
-          - AttributeName: file_name
-            AttributeType: S
-          - AttributeName: status
-            AttributeType: S
-          - AttributeName: created_at
-            AttributeType: S
         KeySchema:
           - AttributeName: transcript_id
-            KeyType: HASH
-          - AttributeName: file_name
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

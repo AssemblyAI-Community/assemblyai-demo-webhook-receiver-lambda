@@ -18,7 +18,7 @@ if os.environ.get('IS_OFFLINE'):
 WEBHOOK_TABLE = os.environ['WEBHOOK_TABLE']
 
 
-@app.route('/status/<string:transcript_id>')
+@app.route('/webhook/status/<string:transcript_id>')
 def get_transcript_status(transcript_id):
     result = dynamodb_client.get_item(
         TableName=WEBHOOK_TABLE, Key={'transcript_id': {'S': transcript_id}}
@@ -37,7 +37,8 @@ def handle_webhook():
     transcript_id = request.json.get('transcript_id')
     status = request.json.get('status')
     file_name = request.args.get('file_name', default='NOT PROVIDED') # optional file_name param example
-    created_at = datetime.now()
+    now = datetime.now()
+    created_at = now.strftime("%m/%d/%Y, %H:%M:%S")
     if not transcript_id or not status:
          return jsonify({'error': 'Please provide both "transcript_id" and "status"'}), 400
     dynamodb_client.put_item(
