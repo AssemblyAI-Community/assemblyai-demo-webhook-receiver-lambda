@@ -50,8 +50,8 @@ def handle_webhook():
 
     dynamodb_client.put_item(
         TableName=WEBHOOK_TABLE, Item={'transcript_id': {'S': transcript_id}, 'status': {'S': status}, 'client_ip': {'S': client_ip}, 'http_code': {'S': http_code}, 'file_name': {'S': file_name}, 'created_at': {'S': created_at}})
-    if http_code in [400,403.404,429,500,503]:
-        return make_response(jsonify(error='Custom error requested'), http_code)
+    if http_code in ['400','403','404','429','500','503']:
+        return make_response(jsonify({'error': 'Custom error requested', 'transcript_id': transcript_id, 'client_ip': client_ip, 'http_code': http_code }), int(http_code))
     else:
         return jsonify({'transcript_id': transcript_id, 'status': status, 'file_name': file_name, 'client_ip': client_ip, 'http_code': http_code, 'created_at': created_at}), 200
 
