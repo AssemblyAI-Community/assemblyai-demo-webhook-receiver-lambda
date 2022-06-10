@@ -28,7 +28,7 @@ def get_transcript_status(transcript_id):
         return jsonify({'error': 'Could not find status for the provided transcript_id'}), 404
 
     return jsonify(
-        {'transcript_id': item.get('transcript_id').get('S'), 'status': item.get('status').get('S'), 'file_name': item.get('file_name').get('S'), 'created_at': item.get('created_at').get('S') }
+        {'transcript_id': item.get('transcript_id').get('S'), 'status': item.get('status').get('S'), 'client_ip': item.get('client_ip').get('S'), 'http_code': item.get('http_code').get('S'),   'file_name': item.get('file_name').get('S'), 'created_at': item.get('created_at').get('S') }
     )
 
 
@@ -37,7 +37,7 @@ def handle_webhook():
     transcript_id = request.json.get('transcript_id')
     status = request.json.get('status')
     file_name = request.args.get('file_name', default='NOT PROVIDED') # optional file_name param example
-    http_code = request.args.get('http_code', default=200) # optional http_code param to return
+    http_code = request.args.get('http_code', default='200') # optional http_code param to return
     now = datetime.now()
     created_at = now.strftime("%m/%d/%Y, %H:%M:%S")
     if request.headers.getlist("X-Forwarded-For"):
@@ -48,7 +48,8 @@ def handle_webhook():
     if not transcript_id or not status:
          return jsonify({'error': 'Please provide both "transcript_id" and "status"'}), 400
 
-    dynamodb_client.put_item(TableName=WEBHOOK_TABLE, Item={'transcript_id': {'S': transcript_id}, 'status': {'S': status}, 'client_ip': {'S': client_ip}, 'http_code': {'S': http_code}, 'file_name': {'S': file_name}, 'created_at': {'S': created_at}})
+    dynamodb_client.put_item(
+        TableName=WEBHOOK_TABLE, Item={'transcript_id': {'S': transcript_id}, 'status': {'S': status}, 'client_ip': {'S': client_ip}, 'http_code': {'S': http_code}, 'file_name': {'S': file_name}, 'created_at': {'S': created_at}})
     if http_code in [400,403.404,429,500,503]:
         return make_response(jsonify(error='Custom error requested'), http_code)
     else:

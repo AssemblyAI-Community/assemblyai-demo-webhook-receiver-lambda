@@ -5,7 +5,7 @@ service: assemblyai-demo-webhook-receiver-lambda
 frameworkVersion: '3'
 
 custom:
-  tableName: 'webhook-table-${self:provider.stage}'
+  tableName: 'webhookv2-table-${self:provider.stage}'
   wsgi:
     app: app.app
 
